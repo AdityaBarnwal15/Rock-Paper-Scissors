@@ -1,4 +1,4 @@
-# ✊✋✌️ Rock-Paper-Scissors Game (PvC & PvP Mode)
+# ✊✋✌️ Rock-Paper-Scissors Game
 
 Welcome to the **Rock-Paper-Scissors** web game! This interactive and animated game allows players to enjoy a classic match either **against the computer (PvC)** or **with a friend (PvP)**. It features smooth animations, emoji-rich feedback, round tracking, and a vibrant, animated background for the best experience!
 
