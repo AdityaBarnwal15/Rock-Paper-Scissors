@@ -1,103 +1,135 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import GameControls from "./components/GameControls";
+import RoundInput from "./components/RoundInput";
+import ResultBox from "./components/ResultBox";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const choices = ["rock", "paper", "scissors"];
+  const [inputRounds, setInputRounds] = useState('');
+  const [totalRounds, setTotalRounds] = useState(null);
+  const [playerChoice, setPlayerChoice] = useState(null);
+  const [computerChoice, setComputerChoice] = useState(null);
+  const [result, setResult] = useState(null);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [wins, setWins] = useState(0);
+  const [losses, setLosses] = useState(0);
+  const [draws, setDraws] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const getResult = (player, computer) => {
+    if (player === computer) {
+      setDraws(d => d + 1);
+      return "It's a Draw!";
+    }
+    const win =
+      (player === "rock" && computer === "scissors") ||
+      (player === "paper" && computer === "rock") ||
+      (player === "scissors" && computer === "paper");
+    if (win) {
+      setWins(w => w + 1);
+      return "You Won! 🎉";
+    }
+    setLosses(l => l + 1);
+    return "Computer Won! 😔";
+  };
+
+  const handleChoice = (choice) => {
+    if (!totalRounds || gameOver) return;
+
+    const computer = choices[Math.floor(Math.random() * choices.length)];
+    setPlayerChoice(choice);
+    setComputerChoice(computer);
+    const outcome = getResult(choice, computer);
+    setResult(outcome);
+
+    if (currentRound >= totalRounds) {
+      setGameOver(true);
+    } else {
+      setCurrentRound(r => r + 1);
+    }
+  };
+
+  const startGame = () => {
+    const rounds = parseInt(inputRounds);
+    if (!rounds || rounds < 1) return alert("Please enter a valid number of rounds.");
+    setTotalRounds(rounds);
+    setGameOver(false);
+    setCurrentRound(1);
+    setWins(0);
+    setLosses(0);
+    setDraws(0);
+    setPlayerChoice(null);
+    setComputerChoice(null);
+    setResult(null);
+  };
+
+  const resetGame = () => {
+    setInputRounds('');
+    setTotalRounds(null);
+    setPlayerChoice(null);
+    setComputerChoice(null);
+    setResult(null);
+    setCurrentRound(1);
+    setWins(0);
+    setLosses(0);
+    setDraws(0);
+    setGameOver(false);
+  };
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white flex flex-col items-center justify-center px-6 py-10">
+  <h1 className="text-5xl font-extrabold mb-8 text-center animate-bounce">
+    Rock ✊ Paper 🖐 Scissors ✌️
+  </h1>
+
+  {!totalRounds ? (
+    <div className="bg-gray-700 p-6 rounded-lg shadow-lg text-center">
+      <p className="text-lg font-semibold mb-4">Enter the number of rounds to start the game:</p>
+      <input
+        type="number"
+        value={inputRounds}
+        onChange={(e) => setInputRounds(e.target.value)}
+        placeholder="e.g., 5"
+        className="w-24 p-2 rounded border border-gray-300 text-black"
+      />
+      <button
+        onClick={startGame}
+        className="ml-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition transform hover:scale-105"
+      >
+        Start Game 🚀
+      </button>
     </div>
+  ) : !gameOver ? (
+    <div className="mb-6 text-center">
+      <p className="text-lg mb-4 animate-pulse">
+        Round {currentRound} of {totalRounds}
+      </p>
+      <GameControls handleChoice={handleChoice} currentRound={currentRound} totalRounds={totalRounds} />
+    </div>
+  ) : (
+    
+    <ResultBox
+      wins={wins}
+      losses={losses}
+      draws={draws}
+      resetGame={resetGame}
+    />
+  )}
+
+  {totalRounds && result && !gameOver && (
+    <div className="text-center bg-gray-700 px-6 py-4 rounded-lg shadow-lg backdrop-blur-md animate-fade-in">
+      <p className="text-xl">You chose: <span className="font-bold text-blue-400">{playerChoice}</span></p>
+      <p className="text-xl">Computer chose: <span className="font-bold text-red-400">{computerChoice}</span></p>
+      <p className={`text-2xl font-bold mt-2 ${
+        result === "You Won! 🎉" ? "text-green-400" :
+        result === "Computer Won! 😔" ? "text-red-400" : "text-yellow-300"
+      }`}>
+        {result}
+      </p>
+    </div>
+  )}
+</main>
   );
 }
